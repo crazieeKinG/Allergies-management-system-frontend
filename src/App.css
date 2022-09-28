@@ -1,0 +1,11 @@
+svg {
+    vertical-align: text-top !important;
+}
+
+a {
+    text-decoration: none !important;
+}
+
+.text-justify {
+    text-align: justify !important;
+}
