@@ -8,6 +8,7 @@ import { Checkbox, DatePicker, Form, Radio } from "antd";
 import Button from "antd/lib/button";
 import Input from "antd/lib/input";
 import UserInterface from "../../interfaces/user.interfaces";
+import { signup } from "../../api/User/user.api";
 
 interface Props {
     initialValue?: UserInterface;
@@ -15,9 +16,20 @@ interface Props {
 
 const SignupForm = ({ initialValue }: Props) => {
     const [aggrement, setAggrement] = useState(!!initialValue);
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = (values: any) => {
-        console.log(values);
+        setLoading(true);
+
+        signup(values)
+            .then((response) => {
+                console.log(response);
+                setLoading(false);
+            })
+            .catch((response) => {
+                console.log(response);
+                setLoading(false);
+            });
     };
 
     return (
@@ -146,7 +158,12 @@ const SignupForm = ({ initialValue }: Props) => {
             )}
 
             <Form.Item wrapperCol={{ offset: 6 }}>
-                <Button type="primary" htmlType="submit" disabled={!aggrement}>
+                <Button
+                    type="primary"
+                    htmlType="submit"
+                    disabled={!aggrement}
+                    loading={loading}
+                >
                     {initialValue ? "Update" : "Sign up"}
                 </Button>
             </Form.Item>

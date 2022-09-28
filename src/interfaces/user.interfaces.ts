@@ -6,5 +6,11 @@ interface UserInterface {
     email: string;
     address: string;
 }
+export type UserToInsert = Omit<UserInterface, "id">;
+
+export interface UserCredentialsInterface {
+    email: string;
+    password: string;
+}
 
 export default UserInterface;
