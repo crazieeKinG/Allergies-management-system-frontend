@@ -43,9 +43,6 @@ const AllergyForm = ({ initialValue }: Props) => {
             delete formattedData.symptoms;
         }
 
-        console.log(values);
-        console.log(formattedData);
-
         if (!initialValue) {
             insertAllergy(formattedData, accessToken)
                 .then((response) => {

@@ -2,15 +2,37 @@ import { LockOutlined } from "@ant-design/icons";
 import { Form } from "antd";
 import Button from "antd/lib/button";
 import Input from "antd/lib/input";
+import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { changePassword } from "../../api/User/user.api";
+import { LIST_ALLERGY } from "../../constants/routes.constants";
+import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
+import { AuthenticationContextDataInterface } from "../../interfaces/authentication.interfaces";
 
 const UpdatePasswordForm = () => {
+    const { accessToken } = useContext(AuthenticationContext)
+        ?.authentication as AuthenticationContextDataInterface;
+
+    const [loading, setLoading] = useState(false);
+
+    const navigate = useNavigate();
+
     const handleSubmit = (values: any) => {
-        console.log(values);
+        setLoading(true);
+
+        changePassword(values.password, accessToken)
+            .then((response) => {
+                setLoading(false);
+                navigate(LIST_ALLERGY);
+            })
+            .catch((error) => {
+                setLoading(false);
+            });
     };
 
     return (
         <Form
-            labelCol={{ span: 6 }}
+            labelCol={{ span: 10 }}
             labelAlign="left"
             onFinish={handleSubmit}
             requiredMark={false}
@@ -59,8 +81,8 @@ const UpdatePasswordForm = () => {
                 />
             </Form.Item>
 
-            <Form.Item wrapperCol={{ offset: 6 }}>
-                <Button type="primary" htmlType="submit">
+            <Form.Item wrapperCol={{ offset: 10 }}>
+                <Button type="primary" htmlType="submit" loading={loading}>
                     Update
                 </Button>
             </Form.Item>

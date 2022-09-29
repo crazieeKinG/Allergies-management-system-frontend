@@ -8,7 +8,7 @@ export const insertAllergy = async (
 ) => {
     try {
         const response = await axios.post(
-            "/allergys",
+            "/allergy",
             allergyData,
             setHeader(token)
         );
@@ -20,7 +20,7 @@ export const insertAllergy = async (
 
 export const getAllergys = async (token: string) => {
     try {
-        const response = await axios.get("/allergys", setHeader(token));
+        const response = await axios.get("/allergy", setHeader(token));
 
         return response.data;
     } catch (error: any) {
@@ -35,7 +35,7 @@ export const updateAllergy = async (
 ) => {
     try {
         const response = await axios.put(
-            `/allergys/${allergyId}`,
+            `/allergy/${allergyId}`,
             allergyData,
             setHeader(token)
         );
@@ -49,7 +49,7 @@ export const updateAllergy = async (
 export const deleteAllergy = async (allergyId: string, token: string) => {
     try {
         const response = await axios.delete(
-            `/allergys/${allergyId}`,
+            `/allergy/${allergyId}`,
             setHeader(token)
         );
 

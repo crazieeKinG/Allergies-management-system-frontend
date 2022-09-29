@@ -2,6 +2,7 @@ import {
     EditOutlined,
     FileAddOutlined,
     HomeOutlined,
+    LockOutlined,
     LogoutOutlined,
     ReadOutlined,
     UserAddOutlined,
@@ -15,7 +16,9 @@ import {
     HOME,
     LIST_ALLERGY,
     SIGN_IN,
+    SIGN_OUT,
     SIGN_UP,
+    UPDATE_PASSWORD,
     UPDATE_PROFILE,
 } from "../../constants/routes.constants";
 import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
@@ -69,8 +72,13 @@ const Navbar = () => {
                     icon: <EditOutlined />,
                 },
                 {
+                    key: "ChangePassword",
+                    label: <Link to={UPDATE_PASSWORD}>Change password</Link>,
+                    icon: <LockOutlined />,
+                },
+                {
                     key: "Signout",
-                    label: "Sign out",
+                    label:  <Link to={SIGN_OUT}>Sign out</Link>,
                     icon: <LogoutOutlined />,
                 },
             ],

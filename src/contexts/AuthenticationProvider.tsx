@@ -1,4 +1,5 @@
 import React, { createContext, useState } from "react";
+import { useCookies } from "react-cookie";
 import AuthenticationContextInterface, {
     AuthenticationContextDataInterface,
 } from "../interfaces/authentication.interfaces";
@@ -12,10 +13,11 @@ export const AuthenticationContext = createContext<
 >(undefined);
 
 const AuthenticationProvider = ({ children }: Props) => {
+    const [cookies] = useCookies();
+    
     const initialAuthenticationData: AuthenticationContextDataInterface = {
-        username: "Saajan Shrestha",
-        accessToken:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiMDVlYWE3YS1iYThiLTQxYzItYmViZC00N2I0ODRmMTUwYmIiLCJpYXQiOjE2NjQ0MjI5Nzh9.QZZc2h3noQYWnvrTRDHjj_fvhKw3Ri-vApTz6E1KIuw",
+        username: cookies.username,
+        accessToken: cookies.accessToken,
     };
     const [authentication, setAuthentication] = useState(
         initialAuthenticationData
