@@ -1,0 +1,1 @@
+export const ONE_DAY_IN_MILLISECOND = 86400000;

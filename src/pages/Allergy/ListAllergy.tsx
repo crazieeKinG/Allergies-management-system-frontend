@@ -1,22 +1,41 @@
 import { Col, Divider, Input, List, Row, Typography } from "antd";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { getAllergys } from "../../api/Allergy/allergy.api";
+import AllergyListItem from "../../components/Allergy/AllergyListItem";
+import { AllergyContext } from "../../contexts/AllergyProvider";
+import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
+import { AllergyContextInterface } from "../../interfaces/allergy.interfaces";
+import { AuthenticationContextDataInterface } from "../../interfaces/authentication.interfaces";
 
 const ListAllergy = () => {
-    const allData = Array.from({ length: 23 }).map((_, i) => ({
-        allergyName: `Allergy Name${i}`,
-        referredName: `Referred Name ${i}`,
-        riskLevel: "Moderate",
-    }));
+    const { accessToken } = useContext(AuthenticationContext)
+        ?.authentication as AuthenticationContextDataInterface;
 
-    const [data, setData] = useState([...allData]);
+    const { allergy, setAllergy } = useContext(
+        AllergyContext
+    ) as AllergyContextInterface;
+
+    const [data, setData] = useState([...allergy]);
 
     const onSearch = (searchContent: string) => {
-        console.log(searchContent);
-        const filteredData = allData.filter((each) =>
-            each.allergyName.includes(searchContent)
+        searchContent = searchContent.toLowerCase();
+        const filteredData = allergy.filter(
+            (each) =>
+                each.allergyName.toLowerCase().includes(searchContent) ||
+                each.referredName.toLowerCase().includes(searchContent)
         );
         setData(filteredData);
     };
+
+    useEffect(() => {
+        getAllergys(accessToken)
+            .then((response) => {
+                setAllergy(response.data);
+                setData(response.data);
+            })
+            .catch(console.log);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <Row justify="space-between">
@@ -28,18 +47,10 @@ const ListAllergy = () => {
                     itemLayout="vertical"
                     size="large"
                     pagination={{
-                        pageSize: 5,
+                        pageSize: 2,
                     }}
                     dataSource={data}
-                    renderItem={(item) => (
-                        <List.Item key={item.allergyName}>
-                            <List.Item.Meta
-                                title={item.allergyName}
-                                description={item.referredName}
-                            />
-                            {item.riskLevel}
-                        </List.Item>
-                    )}
+                    renderItem={(item) => <AllergyListItem listItem={item} />}
                 />
             </Col>
             <Divider type="vertical" />

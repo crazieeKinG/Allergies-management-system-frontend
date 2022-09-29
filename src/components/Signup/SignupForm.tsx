@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
     UserOutlined,
     LockOutlined,
@@ -8,28 +8,46 @@ import { Checkbox, DatePicker, Form, Radio } from "antd";
 import Button from "antd/lib/button";
 import Input from "antd/lib/input";
 import UserInterface from "../../interfaces/user.interfaces";
-import { signup } from "../../api/User/user.api";
+import { signup, updateProfile } from "../../api/User/user.api";
+import { LIST_ALLERGY, SIGN_IN } from "../../constants/routes.constants";
+import { useNavigate } from "react-router-dom";
+import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
+import { AuthenticationContextDataInterface } from "../../interfaces/authentication.interfaces";
 
 interface Props {
     initialValue?: UserInterface;
 }
 
 const SignupForm = ({ initialValue }: Props) => {
+    const { accessToken } = useContext(AuthenticationContext)
+        ?.authentication as AuthenticationContextDataInterface;
+
     const [aggrement, setAggrement] = useState(!!initialValue);
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = (values: any) => {
         setLoading(true);
 
-        signup(values)
-            .then((response) => {
-                console.log(response);
-                setLoading(false);
-            })
-            .catch((response) => {
-                console.log(response);
-                setLoading(false);
-            });
+        if (!initialValue) {
+            signup(values)
+                .then((response) => {
+                    setLoading(false);
+                    navigate(SIGN_IN);
+                })
+                .catch((error) => {
+                    setLoading(false);
+                });
+        } else {
+            updateProfile(values, initialValue.id, accessToken)
+                .then((response) => {
+                    setLoading(false);
+                    navigate(LIST_ALLERGY);
+                })
+                .catch((error) => {
+                    setLoading(false);
+                });
+        }
     };
 
     return (

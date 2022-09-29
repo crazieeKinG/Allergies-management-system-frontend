@@ -2,12 +2,20 @@ import Divider from "antd/lib/divider";
 import { Col } from "antd/lib/grid";
 import Space from "antd/lib/space";
 import Typography from "antd/lib/typography";
-import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { Link, Navigate } from "react-router-dom";
 import SignupForm from "../../components/Signup/SignupForm";
-import { SIGN_IN } from "../../constants/routes.constants";
+import { HOME, SIGN_IN } from "../../constants/routes.constants";
+import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
+import { AuthenticationContextDataInterface } from "../../interfaces/authentication.interfaces";
 
 const Signup = () => {
-    return (
+    const { accessToken } = useContext(AuthenticationContext)
+        ?.authentication as AuthenticationContextDataInterface;
+
+    return accessToken ? (
+        <Navigate to={HOME} />
+    ) : (
         <Space direction="vertical" size={20} className="d-flex">
             <Col span={24}>
                 <Typography.Title>Sign up for new user</Typography.Title>
@@ -16,7 +24,7 @@ const Signup = () => {
                     <SignupForm />
                 </Col>
             </Col>
-            
+
             <Divider />
 
             <Typography.Text>
