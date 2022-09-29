@@ -2,10 +2,18 @@ import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { Form } from "antd";
 import Button from "antd/lib/button";
 import Input from "antd/lib/input";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { signin } from "../../api/User/user.api";
+import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
+import AuthenticationContextInterface, {
+    AuthenticationContextDataInterface,
+} from "../../interfaces/authentication.interfaces";
 
 const SigninForm = () => {
+    const { setAuthentication } = useContext(
+        AuthenticationContext
+    ) as AuthenticationContextInterface;
+
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = (values: any) => {
@@ -14,6 +22,11 @@ const SigninForm = () => {
         signin(values)
             .then((response) => {
                 console.log(response);
+                const authenticationData: AuthenticationContextDataInterface = {
+                    username: response.data.user,
+                    accessToken: response.data.accessToken,
+                };
+                setAuthentication(authenticationData);
                 setLoading(false);
             })
             .catch((response) => {
