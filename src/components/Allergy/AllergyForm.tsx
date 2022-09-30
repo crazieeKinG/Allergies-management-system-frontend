@@ -1,4 +1,5 @@
-import { Button, Form, Input, Popconfirm, Select, Space } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import { Button, Form, Input, Popconfirm, Select, Space, Upload } from "antd";
 import TextArea from "antd/lib/input/TextArea";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +12,7 @@ import { LIST_ALLERGY } from "../../constants/routes.constants";
 import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
 import AllergyInterface from "../../interfaces/allergy.interfaces";
 import { AuthenticationContextDataInterface } from "../../interfaces/authentication.interfaces";
+import createFormData from "../../utils/createFormData";
 import SymptomForm from "./SymptomForm";
 
 interface Props {
@@ -30,21 +32,27 @@ const AllergyForm = ({ initialValue }: Props) => {
 
         const formattedData = {
             ...values,
-            symptoms: [],
+            symptoms: "",
         };
+
+        const symptoms: { symptom: string }[] = [];
 
         if (values.symptoms) {
             values.symptoms.forEach((eachSymptom: any) =>
-                formattedData.symptoms.push({
+                symptoms.push({
                     symptom: eachSymptom,
                 })
             );
+
+            formattedData.symptoms = JSON.stringify(symptoms);
         } else {
             delete formattedData.symptoms;
         }
 
+        const formattedFormData = createFormData(formattedData);
+
         if (!initialValue) {
-            insertAllergy(formattedData, accessToken)
+            insertAllergy(formattedFormData, accessToken)
                 .then((response) => {
                     setLoading(false);
                     navigate(LIST_ALLERGY);
@@ -53,7 +61,7 @@ const AllergyForm = ({ initialValue }: Props) => {
                     setLoading(false);
                 });
         } else {
-            updateAllergy(formattedData, initialValue.id, accessToken)
+            updateAllergy(formattedFormData, initialValue.id, accessToken)
                 .then((response) => {
                     setLoading(false);
                     navigate(LIST_ALLERGY);
@@ -93,6 +101,16 @@ const AllergyForm = ({ initialValue }: Props) => {
 
             <Form.Item name="referredName" label="Referred Name">
                 <Input placeholder="Allergy secondary name" />
+            </Form.Item>
+            <Form.Item label="Allergy picture" name="photo">
+                <Upload
+                    beforeUpload={() => false}
+                    listType="picture"
+                    maxCount={1}
+                    fileList={undefined}
+                >
+                    <Button icon={<UploadOutlined />}>Upload</Button>
+                </Upload>
             </Form.Item>
 
             <Form.Item name="description" label="Description">

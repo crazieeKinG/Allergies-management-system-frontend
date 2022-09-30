@@ -3,8 +3,9 @@ import {
     UserOutlined,
     LockOutlined,
     EnvironmentOutlined,
+    UploadOutlined,
 } from "@ant-design/icons";
-import { Checkbox, DatePicker, Form, Radio } from "antd";
+import { Checkbox, DatePicker, Form, Radio, Upload } from "antd";
 import Button from "antd/lib/button";
 import Input from "antd/lib/input";
 import UserInterface from "../../interfaces/user.interfaces";
@@ -13,12 +14,15 @@ import { LIST_ALLERGY, SIGN_IN } from "../../constants/routes.constants";
 import { useNavigate } from "react-router-dom";
 import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
 import { AuthenticationContextDataInterface } from "../../interfaces/authentication.interfaces";
+import createFormData from "../../utils/createFormData";
+import { useCookies } from "react-cookie";
 
 interface Props {
     initialValue?: UserInterface;
 }
 
 const SignupForm = ({ initialValue }: Props) => {
+    const [, setCookie, removeCookie] = useCookies();
     const { accessToken } = useContext(AuthenticationContext)
         ?.authentication as AuthenticationContextDataInterface;
 
@@ -29,8 +33,10 @@ const SignupForm = ({ initialValue }: Props) => {
     const handleSubmit = (values: any) => {
         setLoading(true);
 
+        const formattedData = createFormData(values);
+
         if (!initialValue) {
-            signup(values)
+            signup(formattedData)
                 .then((response) => {
                     setLoading(false);
                     navigate(SIGN_IN);
@@ -39,8 +45,13 @@ const SignupForm = ({ initialValue }: Props) => {
                     setLoading(false);
                 });
         } else {
-            updateProfile(values, initialValue.id, accessToken)
+            updateProfile(formattedData, initialValue.id, accessToken)
                 .then((response) => {
+                    removeCookie("username");
+                    removeCookie("photoUrl");
+                    setCookie("username", response.data[0].fullName);
+                    setCookie("photoUrl", response.data[0].photoUrl);
+
                     setLoading(false);
                     navigate(LIST_ALLERGY);
                 })
@@ -58,6 +69,17 @@ const SignupForm = ({ initialValue }: Props) => {
             requiredMark={false}
             initialValues={initialValue}
         >
+            <Form.Item label="Profile picture" name="photo">
+                <Upload
+                    beforeUpload={() => false}
+                    listType="picture"
+                    maxCount={1}
+                    fileList={undefined}
+                >
+                    <Button icon={<UploadOutlined />}>Upload</Button>
+                </Upload>
+            </Form.Item>
+
             <Form.Item
                 name="fullName"
                 label="Name"

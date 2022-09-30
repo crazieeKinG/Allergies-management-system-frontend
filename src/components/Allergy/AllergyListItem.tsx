@@ -1,4 +1,4 @@
-import { List } from "antd";
+import { List, Typography } from "antd";
 import { Link } from "react-router-dom";
 import { EDIT_ALLERGY } from "../../constants/routes.constants";
 import AllergyInterface from "../../interfaces/allergy.interfaces";
@@ -18,13 +18,24 @@ const AllergyListItem = ({ listItem }: Props) => {
                 </Link>,
                 <Link to={"#"}>View All</Link>,
             ]}
+            extra={
+                listItem.photoUrl && (
+                    <img
+                        width={270}
+                        src={listItem.photoUrl}
+                        alt={listItem.allergyName}
+                    />
+                )
+            }
         >
             <List.Item.Meta
                 title={listItem.allergyName}
                 description={listItem.referredName}
             />
-            {listItem.id} <br />
-            {listItem.riskLevel}
+            <Typography.Paragraph>{listItem.description}</Typography.Paragraph>
+            <Typography.Paragraph type="secondary">
+                Risk level: {listItem.riskLevel}
+            </Typography.Paragraph>
         </List.Item>
     );
 };

@@ -1,7 +1,4 @@
-import {
-    UserCredentialsInterface,
-    UserToInsert,
-} from "../../interfaces/user.interfaces";
+import { UserCredentialsInterface } from "../../interfaces/user.interfaces";
 import axios from "../axiosConfig";
 import setHeader from "../setHeader";
 
@@ -15,7 +12,7 @@ export const signin = async (userCredentials: UserCredentialsInterface) => {
     }
 };
 
-export const signup = async (userData: UserToInsert) => {
+export const signup = async (userData: FormData) => {
     try {
         const response = await axios.post("/user/signup", userData);
 
@@ -36,7 +33,7 @@ export const getUserData = async (token: string) => {
 };
 
 export const updateProfile = async (
-    userData: UserToInsert,
+    userData: FormData,
     userId: string,
     token: string
 ) => {
@@ -53,10 +50,7 @@ export const updateProfile = async (
     }
 };
 
-export const changePassword = async (
-    password: string,
-    token: string
-) => {
+export const changePassword = async (password: string, token: string) => {
     try {
         const response = await axios.put(
             `/user/reset/password`,

@@ -6,7 +6,9 @@ export interface AllergyContextInterface {
 interface AllergyInterface {
     id: string;
     allergyName: string;
+    description: string;
     referredName: string;
+    photoUrl: string;
     riskLevel: string;
 }
 

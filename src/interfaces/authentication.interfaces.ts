@@ -1,5 +1,6 @@
 export interface AuthenticationContextDataInterface {
     username: string;
+    photoUrl: string;
     accessToken: string;
 }
 

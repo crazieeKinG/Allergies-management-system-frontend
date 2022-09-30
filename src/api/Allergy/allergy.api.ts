@@ -1,11 +1,7 @@
-import AllergyInterface from "../../interfaces/allergy.interfaces";
 import axios from "../axiosConfig";
 import setHeader from "../setHeader";
 
-export const insertAllergy = async (
-    allergyData: AllergyInterface,
-    token: string
-) => {
+export const insertAllergy = async (allergyData: FormData, token: string) => {
     try {
         const response = await axios.post(
             "/allergy",
@@ -29,7 +25,7 @@ export const getAllergys = async (token: string) => {
 };
 
 export const updateAllergy = async (
-    allergyData: AllergyInterface,
+    allergyData: FormData,
     allergyId: string,
     token: string
 ) => {

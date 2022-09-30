@@ -29,14 +29,21 @@ const SigninForm = () => {
             .then((response) => {
                 const authenticationData: AuthenticationContextDataInterface = {
                     username: response.data.user,
+                    photoUrl: response.data.photoUrl,
                     accessToken: response.data.accessToken,
                 };
 
                 setCookie("username", response.data.user, {
                     ...cookieExpirationTime(),
                 });
+                setCookie("photoUrl", response.data.photoUrl, {
+                    ...cookieExpirationTime(),
+                });
 
-                setCookie("accessToken", response.data.accessToken);
+                setCookie("accessToken", response.data.accessToken, {
+                    ...cookieExpirationTime(),
+                });
+
                 setAuthentication(authenticationData);
                 setLoading(false);
 
