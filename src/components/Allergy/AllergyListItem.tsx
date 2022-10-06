@@ -1,6 +1,6 @@
 import { List, Typography } from "antd";
 import { Link } from "react-router-dom";
-import { EDIT_ALLERGY } from "../../constants/routes.constants";
+import { EDIT_ALLERGY, SINGLE_ALLERGY } from "../../constants/routes.constants";
 import AllergyInterface from "../../interfaces/allergy.interfaces";
 import updateURLGenerate from "../../utils/updateURLGenerate";
 
@@ -16,7 +16,9 @@ const AllergyListItem = ({ listItem }: Props) => {
                 <Link to={updateURLGenerate(EDIT_ALLERGY, listItem.id)}>
                     Edit
                 </Link>,
-                <Link to={"#"}>View All</Link>,
+                <Link to={updateURLGenerate(SINGLE_ALLERGY, listItem.id)}>
+                    View All
+                </Link>,
             ]}
             extra={
                 listItem.photoUrl && (

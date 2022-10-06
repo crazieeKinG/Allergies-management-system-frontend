@@ -3,6 +3,16 @@ export interface AllergyContextInterface {
     setAllergy: React.Dispatch<React.SetStateAction<AllergyInterface[]>>;
 }
 
+export interface SymptomInterface {
+    id?: string;
+    symptom: string;
+    allergyId: string;
+}
+
+export interface SymptomInsertInterface {
+    symptoms: string;
+}
+
 interface AllergyInterface {
     id: string;
     allergyName: string;
@@ -10,6 +20,7 @@ interface AllergyInterface {
     referredName: string;
     photoUrl: string;
     riskLevel: string;
+    symptoms: SymptomInterface[];
 }
 
 export default AllergyInterface;

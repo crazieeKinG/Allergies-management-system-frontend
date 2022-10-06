@@ -15,6 +15,7 @@ const ListAllergy = () => {
         AllergyContext
     ) as AllergyContextInterface;
 
+    console.log(allergy);
     const [data, setData] = useState([...allergy]);
 
     const onSearch = (searchContent: string) => {
@@ -30,6 +31,7 @@ const ListAllergy = () => {
     useEffect(() => {
         getAllergys(accessToken)
             .then((response) => {
+                console.log()
                 setAllergy(response.data);
                 setData(response.data);
             })
