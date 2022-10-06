@@ -1,5 +1,14 @@
 import { UploadOutlined } from "@ant-design/icons";
-import { Button, Form, Input, Popconfirm, Select, Space, Upload } from "antd";
+import {
+    Alert,
+    Button,
+    Form,
+    Input,
+    Popconfirm,
+    Select,
+    Space,
+    Upload,
+} from "antd";
 import TextArea from "antd/lib/input/TextArea";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -8,8 +17,10 @@ import {
     insertAllergy,
     updateAllergy,
 } from "../../api/Allergy/allergy.api";
-import { LIST_ALLERGY } from "../../constants/routes.constants";
+import { DEFAULT_ALERT_VALUE } from "../../constants/alert.constants";
+import { LIST_ALLERGY, SIGN_OUT } from "../../constants/routes.constants";
 import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
+import AlertMessageInterface from "../../interfaces/alert.interfaces";
 import AllergyInterface from "../../interfaces/allergy.interfaces";
 import { AuthenticationContextDataInterface } from "../../interfaces/authentication.interfaces";
 import createFormData from "../../utils/createFormData";
@@ -26,6 +37,8 @@ const AllergyForm = ({ initialValue }: Props) => {
 
     const [loading, setLoading] = useState(false);
     const [deleteLoading, setDeleteLoading] = useState(false);
+    const [alertMessage, setAlertMessage] =
+        useState<AlertMessageInterface>(DEFAULT_ALERT_VALUE);
 
     const handleSubmit = (values: any) => {
         setLoading(true);
@@ -58,7 +71,10 @@ const AllergyForm = ({ initialValue }: Props) => {
                     navigate(LIST_ALLERGY);
                 })
                 .catch((error) => {
+                    if (error.status === 401) navigate(SIGN_OUT);
                     setLoading(false);
+
+                    handleAlertMessage(error);
                 });
         } else {
             updateAllergy(formattedFormData, initialValue.id, accessToken)
@@ -67,7 +83,10 @@ const AllergyForm = ({ initialValue }: Props) => {
                     navigate(LIST_ALLERGY);
                 })
                 .catch((error) => {
+                    if (error.status === 401) navigate(SIGN_OUT);
                     setLoading(false);
+
+                    handleAlertMessage(error);
                 });
         }
     };
@@ -79,7 +98,24 @@ const AllergyForm = ({ initialValue }: Props) => {
                 navigate(LIST_ALLERGY);
             })
             .catch((error) => {
+                if (error.status === 401) navigate(SIGN_OUT);
                 setDeleteLoading(false);
+
+                handleAlertMessage(error);
+            });
+    };
+
+    const handleAlertMessage = (error: any) => {
+        if (!error)
+            setAlertMessage({
+                type: "error",
+                message:
+                    "Cannot connect to the server. Please try again later.",
+            });
+        else
+            setAlertMessage({
+                type: "warning",
+                message: error.message,
             });
     };
 
@@ -91,6 +127,12 @@ const AllergyForm = ({ initialValue }: Props) => {
             initialValues={initialValue}
             requiredMark={false}
         >
+            {alertMessage.message && (
+                <Alert
+                    type={alertMessage.type}
+                    message={alertMessage.message}
+                />
+            )}
             <Form.Item
                 name="allergyName"
                 label="Name"

@@ -10,7 +10,7 @@ export const insertAllergy = async (allergyData: FormData, token: string) => {
         );
         return response.data;
     } catch (error: any) {
-        throw error.response.data;
+        throw error.response;
     }
 };
 
@@ -20,7 +20,7 @@ export const getAllergys = async (token: string) => {
 
         return response.data;
     } catch (error: any) {
-        throw error.response.data;
+        throw error.response;
     }
 };
 
@@ -38,7 +38,7 @@ export const updateAllergy = async (
 
         return response.data;
     } catch (error: any) {
-        throw error.response.data;
+        throw error.response;
     }
 };
 
@@ -51,6 +51,6 @@ export const deleteAllergy = async (allergyId: string, token: string) => {
 
         return response.data;
     } catch (error: any) {
-        throw error.response.data;
+        throw error.response;
     }
 };

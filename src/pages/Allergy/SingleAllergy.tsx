@@ -22,7 +22,7 @@ const SingleAllergy = () => {
             <Row align="middle">
                 <Col>
                     <Typography.Title level={2}>
-                        {initialValue.allergyName},
+                        {initialValue.allergyName}
                     </Typography.Title>
                 </Col>
                 <Col>
