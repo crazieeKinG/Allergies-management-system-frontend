@@ -3,8 +3,9 @@ import {
     UserOutlined,
     LockOutlined,
     EnvironmentOutlined,
+    UploadOutlined,
 } from "@ant-design/icons";
-import { Checkbox, DatePicker, Form, Radio } from "antd";
+import { Alert, Checkbox, DatePicker, Form, Radio, Upload } from "antd";
 import Button from "antd/lib/button";
 import Input from "antd/lib/input";
 import UserInterface from "../../interfaces/user.interfaces";
@@ -13,39 +14,86 @@ import { LIST_ALLERGY, SIGN_IN } from "../../constants/routes.constants";
 import { useNavigate } from "react-router-dom";
 import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
 import { AuthenticationContextDataInterface } from "../../interfaces/authentication.interfaces";
+import createFormData from "../../utils/createFormData";
+import { useCookies } from "react-cookie";
+import AlertMessageInterface from "../../interfaces/alert.interfaces";
+import { DEFAULT_ALERT_VALUE } from "../../constants/alert.constants";
 
 interface Props {
     initialValue?: UserInterface;
 }
 
 const SignupForm = ({ initialValue }: Props) => {
+    const [, setCookie, removeCookie] = useCookies();
     const { accessToken } = useContext(AuthenticationContext)
         ?.authentication as AuthenticationContextDataInterface;
 
     const [aggrement, setAggrement] = useState(!!initialValue);
     const [loading, setLoading] = useState(false);
+    const [alertMessage, setAlertMessage] =
+        useState<AlertMessageInterface>(DEFAULT_ALERT_VALUE);
     const navigate = useNavigate();
 
     const handleSubmit = (values: any) => {
         setLoading(true);
 
+        const formattedData = createFormData(values);
+
         if (!initialValue) {
-            signup(values)
+            signup(formattedData)
                 .then((response) => {
                     setLoading(false);
-                    navigate(SIGN_IN);
+
+                    setTimeout(() => {
+                        navigate(SIGN_IN);
+                    }, 3000);
+
+                    setAlertMessage({
+                        type: "success",
+                        message:
+                            "User registered successfully. Redirecting to the sign in page...",
+                    });
                 })
                 .catch((error) => {
                     setLoading(false);
+
+                    if (!error)
+                        setAlertMessage({
+                            type: "error",
+                            message:
+                                "Cannot connect to the server. Please try again later.",
+                        });
+                    else
+                        setAlertMessage({
+                            type: "warning",
+                            message: error.message,
+                        });
                 });
         } else {
-            updateProfile(values, initialValue.id, accessToken)
+            updateProfile(formattedData, initialValue.id, accessToken)
                 .then((response) => {
+                    removeCookie("username");
+                    removeCookie("photoUrl");
+                    setCookie("username", response.data[0].fullName);
+                    setCookie("photoUrl", response.data[0].photoUrl);
+
                     setLoading(false);
                     navigate(LIST_ALLERGY);
                 })
                 .catch((error) => {
                     setLoading(false);
+
+                    if (!error)
+                        setAlertMessage({
+                            type: "error",
+                            message:
+                                "Cannot connect to the server. Please try again later.",
+                        });
+                    else
+                        setAlertMessage({
+                            type: "warning",
+                            message: error.message,
+                        });
                 });
         }
     };
@@ -58,6 +106,24 @@ const SignupForm = ({ initialValue }: Props) => {
             requiredMark={false}
             initialValues={initialValue}
         >
+            {alertMessage.message && (
+                <Alert
+                    type={alertMessage.type}
+                    message={alertMessage.message}
+                    className="my-2"
+                />
+            )}
+            <Form.Item label="Profile picture" name="photo">
+                <Upload
+                    beforeUpload={() => false}
+                    listType="picture"
+                    maxCount={1}
+                    fileList={undefined}
+                >
+                    <Button icon={<UploadOutlined />}>Upload</Button>
+                </Upload>
+            </Form.Item>
+
             <Form.Item
                 name="fullName"
                 label="Name"

@@ -1,11 +1,7 @@
-import AllergyInterface from "../../interfaces/allergy.interfaces";
 import axios from "../axiosConfig";
 import setHeader from "../setHeader";
 
-export const insertAllergy = async (
-    allergyData: AllergyInterface,
-    token: string
-) => {
+export const insertAllergy = async (allergyData: FormData, token: string) => {
     try {
         const response = await axios.post(
             "/allergy",
@@ -14,7 +10,7 @@ export const insertAllergy = async (
         );
         return response.data;
     } catch (error: any) {
-        throw error.response.data;
+        throw error.response;
     }
 };
 
@@ -24,12 +20,12 @@ export const getAllergys = async (token: string) => {
 
         return response.data;
     } catch (error: any) {
-        throw error.response.data;
+        throw error.response;
     }
 };
 
 export const updateAllergy = async (
-    allergyData: AllergyInterface,
+    allergyData: FormData,
     allergyId: string,
     token: string
 ) => {
@@ -42,7 +38,7 @@ export const updateAllergy = async (
 
         return response.data;
     } catch (error: any) {
-        throw error.response.data;
+        throw error.response;
     }
 };
 
@@ -55,6 +51,6 @@ export const deleteAllergy = async (allergyId: string, token: string) => {
 
         return response.data;
     } catch (error: any) {
-        throw error.response.data;
+        throw error.response;
     }
 };

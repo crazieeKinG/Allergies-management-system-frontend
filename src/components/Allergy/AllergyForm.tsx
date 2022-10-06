@@ -1,4 +1,14 @@
-import { Button, Form, Input, Popconfirm, Select, Space } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import {
+    Alert,
+    Button,
+    Form,
+    Input,
+    Popconfirm,
+    Select,
+    Space,
+    Upload,
+} from "antd";
 import TextArea from "antd/lib/input/TextArea";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -7,10 +17,13 @@ import {
     insertAllergy,
     updateAllergy,
 } from "../../api/Allergy/allergy.api";
-import { LIST_ALLERGY } from "../../constants/routes.constants";
+import { DEFAULT_ALERT_VALUE } from "../../constants/alert.constants";
+import { LIST_ALLERGY, SIGN_OUT } from "../../constants/routes.constants";
 import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
+import AlertMessageInterface from "../../interfaces/alert.interfaces";
 import AllergyInterface from "../../interfaces/allergy.interfaces";
 import { AuthenticationContextDataInterface } from "../../interfaces/authentication.interfaces";
+import createFormData from "../../utils/createFormData";
 import SymptomForm from "./SymptomForm";
 
 interface Props {
@@ -24,42 +37,56 @@ const AllergyForm = ({ initialValue }: Props) => {
 
     const [loading, setLoading] = useState(false);
     const [deleteLoading, setDeleteLoading] = useState(false);
+    const [alertMessage, setAlertMessage] =
+        useState<AlertMessageInterface>(DEFAULT_ALERT_VALUE);
 
     const handleSubmit = (values: any) => {
         setLoading(true);
 
         const formattedData = {
             ...values,
-            symptoms: [],
+            symptoms: "",
         };
+
+        const symptoms: { symptom: string }[] = [];
 
         if (values.symptoms) {
             values.symptoms.forEach((eachSymptom: any) =>
-                formattedData.symptoms.push({
+                symptoms.push({
                     symptom: eachSymptom,
                 })
             );
+
+            formattedData.symptoms = JSON.stringify(symptoms);
         } else {
             delete formattedData.symptoms;
         }
 
+        const formattedFormData = createFormData(formattedData);
+
         if (!initialValue) {
-            insertAllergy(formattedData, accessToken)
+            insertAllergy(formattedFormData, accessToken)
                 .then((response) => {
                     setLoading(false);
                     navigate(LIST_ALLERGY);
                 })
                 .catch((error) => {
+                    if (error.status === 401) navigate(SIGN_OUT);
                     setLoading(false);
+
+                    handleAlertMessage(error);
                 });
         } else {
-            updateAllergy(formattedData, initialValue.id, accessToken)
+            updateAllergy(formattedFormData, initialValue.id, accessToken)
                 .then((response) => {
                     setLoading(false);
                     navigate(LIST_ALLERGY);
                 })
                 .catch((error) => {
+                    if (error.status === 401) navigate(SIGN_OUT);
                     setLoading(false);
+
+                    handleAlertMessage(error);
                 });
         }
     };
@@ -71,7 +98,24 @@ const AllergyForm = ({ initialValue }: Props) => {
                 navigate(LIST_ALLERGY);
             })
             .catch((error) => {
+                if (error.status === 401) navigate(SIGN_OUT);
                 setDeleteLoading(false);
+
+                handleAlertMessage(error);
+            });
+    };
+
+    const handleAlertMessage = (error: any) => {
+        if (!error)
+            setAlertMessage({
+                type: "error",
+                message:
+                    "Cannot connect to the server. Please try again later.",
+            });
+        else
+            setAlertMessage({
+                type: "warning",
+                message: error.message,
             });
     };
 
@@ -83,6 +127,12 @@ const AllergyForm = ({ initialValue }: Props) => {
             initialValues={initialValue}
             requiredMark={false}
         >
+            {alertMessage.message && (
+                <Alert
+                    type={alertMessage.type}
+                    message={alertMessage.message}
+                />
+            )}
             <Form.Item
                 name="allergyName"
                 label="Name"
@@ -93,6 +143,16 @@ const AllergyForm = ({ initialValue }: Props) => {
 
             <Form.Item name="referredName" label="Referred Name">
                 <Input placeholder="Allergy secondary name" />
+            </Form.Item>
+            <Form.Item label="Allergy picture" name="photo">
+                <Upload
+                    beforeUpload={() => false}
+                    listType="picture"
+                    maxCount={1}
+                    fileList={undefined}
+                >
+                    <Button icon={<UploadOutlined />}>Upload</Button>
+                </Upload>
             </Form.Item>
 
             <Form.Item name="description" label="Description">

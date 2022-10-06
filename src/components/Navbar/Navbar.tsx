@@ -8,7 +8,7 @@ import {
     UserAddOutlined,
     UserOutlined,
 } from "@ant-design/icons";
-import { Col, Divider, Menu, Row, Typography } from "antd";
+import { Avatar, Col, Divider, Menu, Row, Typography } from "antd";
 import { useContext } from "react";
 import { Link, Outlet } from "react-router-dom";
 import {
@@ -25,8 +25,9 @@ import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
 import { AuthenticationContextDataInterface } from "../../interfaces/authentication.interfaces";
 
 const Navbar = () => {
-    const { username, accessToken } = useContext(AuthenticationContext)
-        ?.authentication as AuthenticationContextDataInterface;
+    const { username, photoUrl, accessToken } = useContext(
+        AuthenticationContext
+    )?.authentication as AuthenticationContextDataInterface;
     const NavItems = [
         {
             key: "Home",
@@ -64,7 +65,7 @@ const Navbar = () => {
         {
             key: "Profile",
             label: username,
-            icon: <UserOutlined />,
+            icon: <Avatar src={photoUrl} />,
             children: [
                 {
                     key: "UpdateProfile",
@@ -78,7 +79,7 @@ const Navbar = () => {
                 },
                 {
                     key: "Signout",
-                    label:  <Link to={SIGN_OUT}>Sign out</Link>,
+                    label: <Link to={SIGN_OUT}>Sign out</Link>,
                     icon: <LogoutOutlined />,
                 },
             ],

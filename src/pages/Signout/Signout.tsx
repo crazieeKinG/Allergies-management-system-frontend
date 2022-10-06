@@ -17,10 +17,12 @@ const Signout = () => {
 
     useEffect(() => {
         removeCookie("username");
+        removeCookie("photoUrl");
         removeCookie("accessToken");
-        
+
         setAuthentication({
             username: "",
+            photoUrl: "",
             accessToken: "",
         });
         navigate(HOME);

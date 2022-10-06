@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import AuthenticationContextInterface, {
     AuthenticationContextDataInterface,
@@ -14,14 +14,25 @@ export const AuthenticationContext = createContext<
 
 const AuthenticationProvider = ({ children }: Props) => {
     const [cookies] = useCookies();
-    
+
     const initialAuthenticationData: AuthenticationContextDataInterface = {
         username: cookies.username,
+        photoUrl: cookies.photoUrl,
         accessToken: cookies.accessToken,
     };
     const [authentication, setAuthentication] = useState(
         initialAuthenticationData
     );
+
+    useEffect(() => {
+        const AuthenticationData: AuthenticationContextDataInterface = {
+            username: cookies.username,
+            photoUrl: cookies.photoUrl,
+            accessToken: cookies.accessToken,
+        };
+
+        setAuthentication(AuthenticationData);
+    }, [cookies]);
 
     return (
         <AuthenticationContext.Provider
