@@ -6,6 +6,7 @@ interface UserInterface {
     email: string;
     address: string;
     photo?: File;
+    photoUrl?: string;
 }
 export type UserToInsert = Omit<UserInterface, "id">;
 

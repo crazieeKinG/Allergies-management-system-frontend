@@ -19,20 +19,16 @@ import {
 } from "../../../api/Allergy/symptom.api";
 import SymptomForm from "../../../components/Allergy/SymptomForm";
 import { DEFAULT_ALERT_VALUE } from "../../../constants/alert.constants";
-import { LIST_ALLERGY, SIGN_OUT } from "../../../constants/routes.constants";
+import { LIST_ALLERGY, HOME } from "../../../constants/routes.constants";
 import { AllergyContext } from "../../../contexts/AllergyProvider";
-import { AuthenticationContext } from "../../../contexts/AuthenticationProvider";
 import AlertMessageInterface from "../../../interfaces/alert.interfaces";
 import AllergyInterface, {
     AllergyContextInterface,
     SymptomInterface,
 } from "../../../interfaces/allergy.interfaces";
-import { AuthenticationContextDataInterface } from "../../../interfaces/authentication.interfaces";
 
 const EditSymptom = () => {
     const allergyId = useParams().id;
-    const { accessToken } = useContext(AuthenticationContext)
-        ?.authentication as AuthenticationContextDataInterface;
     const { setAllergy } = useContext(
         AllergyContext
     ) as AllergyContextInterface;
@@ -52,7 +48,7 @@ const EditSymptom = () => {
 
     const refreshData = () => {
         setRefresh(true);
-        getAllergys(accessToken)
+        getAllergys()
             .then((response) => {
                 setRefresh(false);
                 setAllergy(response.data);
@@ -66,7 +62,7 @@ const EditSymptom = () => {
                 setInitialValue(selectedData);
             })
             .catch((error) => {
-                if (error.status === 401) navigate(SIGN_OUT);
+                if (error.status === 401) navigate(HOME);
                 setRefresh(false);
                 handleAlertMessage(error);
             });
@@ -85,7 +81,7 @@ const EditSymptom = () => {
                 allergyId: allergyId as string,
             };
 
-            updateSymptom(updatedSymptom, accessToken)
+            updateSymptom(updatedSymptom)
                 .then((response) => {
                     setLoading(false);
                     setUpdatedIndex(-1);
@@ -100,7 +96,7 @@ const EditSymptom = () => {
                 .catch((error) => {
                     setLoading(false);
                     setUpdatedIndex(-1);
-                    if (error.status === 401) navigate(SIGN_OUT);
+                    if (error.status === 401) navigate(HOME);
 
                     handleAlertMessage(error);
                 });
@@ -108,7 +104,7 @@ const EditSymptom = () => {
     };
 
     const confirmDelete = (symptomId: string) => {
-        deleteSymptom(symptomId, accessToken)
+        deleteSymptom(symptomId)
             .then((response) => {
                 setDeleteLoading(false);
 
@@ -116,7 +112,7 @@ const EditSymptom = () => {
             })
             .catch((error) => {
                 setDeleteLoading(false);
-                if (error.status === 401) navigate(SIGN_OUT);
+                if (error.status === 401) navigate(HOME);
 
                 handleAlertMessage(error);
             });
@@ -137,13 +133,13 @@ const EditSymptom = () => {
                 symptoms: JSON.stringify(symptoms),
             };
 
-            addSymptom(formattedData, accessToken)
+            addSymptom(formattedData)
                 .then((response) => {
                     form.resetFields();
                     refreshData();
                 })
                 .catch((error) => {
-                    if (error.status === 401) navigate(SIGN_OUT);
+                    if (error.status === 401) navigate(HOME);
                     handleAlertMessage(error);
                 });
         }

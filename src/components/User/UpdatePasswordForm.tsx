@@ -2,17 +2,12 @@ import { LockOutlined } from "@ant-design/icons";
 import { Form } from "antd";
 import Button from "antd/lib/button";
 import Input from "antd/lib/input";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { changePassword } from "../../api/User/user.api";
 import { LIST_ALLERGY } from "../../constants/routes.constants";
-import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
-import { AuthenticationContextDataInterface } from "../../interfaces/authentication.interfaces";
 
 const UpdatePasswordForm = () => {
-    const { accessToken } = useContext(AuthenticationContext)
-        ?.authentication as AuthenticationContextDataInterface;
-
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
@@ -20,7 +15,7 @@ const UpdatePasswordForm = () => {
     const handleSubmit = (values: any) => {
         setLoading(true);
 
-        changePassword(values.password, accessToken)
+        changePassword(values.password)
             .then((response) => {
                 setLoading(false);
                 navigate(LIST_ALLERGY);

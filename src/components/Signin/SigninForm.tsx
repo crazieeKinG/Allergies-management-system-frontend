@@ -3,26 +3,22 @@ import { Alert, Form } from "antd";
 import Button from "antd/lib/button";
 import Input from "antd/lib/input";
 import { useContext, useState } from "react";
-import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { signin } from "../../api/User/user.api";
 import { DEFAULT_ALERT_VALUE } from "../../constants/alert.constants";
 import { LIST_ALLERGY } from "../../constants/routes.constants";
 import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
 import AlertMessageInterface from "../../interfaces/alert.interfaces";
-import AuthenticationContextInterface, {
-    AuthenticationContextDataInterface,
-} from "../../interfaces/authentication.interfaces";
-import cookieExpirationTime from "../../utils/cookieExpirationTime";
+import AuthenticationContextInterface from "../../interfaces/authentication.interfaces";
 
 const SigninForm = () => {
     const { setAuthentication } = useContext(
         AuthenticationContext
     ) as AuthenticationContextInterface;
-    const [, setCookie] = useCookies();
 
     const [loading, setLoading] = useState(false);
-    const [alertMessage, setAlertMessage] = useState<AlertMessageInterface>(DEFAULT_ALERT_VALUE);
+    const [alertMessage, setAlertMessage] =
+        useState<AlertMessageInterface>(DEFAULT_ALERT_VALUE);
     const navigate = useNavigate();
 
     const handleSubmit = (values: any) => {
@@ -30,22 +26,7 @@ const SigninForm = () => {
 
         signin(values)
             .then((response) => {
-                const authenticationData: AuthenticationContextDataInterface = {
-                    username: response.data.user,
-                    photoUrl: response.data.photoUrl,
-                    accessToken: response.data.accessToken,
-                };
-
-                setCookie("username", response.data.user, {
-                    ...cookieExpirationTime(),
-                });
-                setCookie("photoUrl", response.data.photoUrl, {
-                    ...cookieExpirationTime(),
-                });
-
-                setCookie("accessToken", response.data.accessToken, {
-                    ...cookieExpirationTime(),
-                });
+                const authenticationData: string = response.data.accessToken;
 
                 setAuthentication(authenticationData);
                 setLoading(false);
