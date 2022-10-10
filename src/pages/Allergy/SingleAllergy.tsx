@@ -1,8 +1,7 @@
 import { EditOutlined } from "@ant-design/icons";
 import { Col, Divider, List, Row, Typography } from "antd";
 import { useContext } from "react";
-import { Link } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { EDIT_ALLERGY, EDIT_SYMPTOM } from "../../constants/routes.constants";
 import { AllergyContext } from "../../contexts/AllergyProvider";
 import { AllergyContextInterface } from "../../interfaces/allergy.interfaces";

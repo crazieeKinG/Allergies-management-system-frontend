@@ -7,7 +7,6 @@ import {
     HOME,
     LIST_ALLERGY,
     SIGN_IN,
-    SIGN_OUT,
     SIGN_UP,
     SINGLE_ALLERGY,
     UPDATE_PASSWORD,
@@ -20,7 +19,6 @@ import SingleAllergy from "../pages/Allergy/SingleAllergy";
 import EditSymptom from "../pages/Allergy/Symptom/EditSymptom";
 import Home from "../pages/Home/Home";
 import Signin from "../pages/Signin/Signin";
-import Signout from "../pages/Signout/Signout";
 import Signup from "../pages/Signup/Signup";
 import ChangePassword from "../pages/User/ChangePassword";
 import UpdateProfile from "../pages/User/UpdateProfile";
@@ -48,7 +46,6 @@ const AppRoutes = () => {
                         path={UPDATE_PASSWORD}
                         element={<ChangePassword />}
                     />
-                    <Route path={SIGN_OUT} element={<Signout />} />
                 </Route>
             </Routes>
         </BrowserRouter>

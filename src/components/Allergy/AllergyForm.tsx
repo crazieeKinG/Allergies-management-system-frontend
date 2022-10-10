@@ -10,7 +10,7 @@ import {
     Upload,
 } from "antd";
 import TextArea from "antd/lib/input/TextArea";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     deleteAllergy,
@@ -18,11 +18,9 @@ import {
     updateAllergy,
 } from "../../api/Allergy/allergy.api";
 import { DEFAULT_ALERT_VALUE } from "../../constants/alert.constants";
-import { LIST_ALLERGY, SIGN_OUT } from "../../constants/routes.constants";
-import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
+import { LIST_ALLERGY, HOME } from "../../constants/routes.constants";
 import AlertMessageInterface from "../../interfaces/alert.interfaces";
 import AllergyInterface from "../../interfaces/allergy.interfaces";
-import { AuthenticationContextDataInterface } from "../../interfaces/authentication.interfaces";
 import createFormData from "../../utils/createFormData";
 import SymptomForm from "./SymptomForm";
 
@@ -31,8 +29,6 @@ interface Props {
 }
 
 const AllergyForm = ({ initialValue }: Props) => {
-    const { accessToken } = useContext(AuthenticationContext)
-        ?.authentication as AuthenticationContextDataInterface;
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);
@@ -65,25 +61,25 @@ const AllergyForm = ({ initialValue }: Props) => {
         const formattedFormData = createFormData(formattedData);
 
         if (!initialValue) {
-            insertAllergy(formattedFormData, accessToken)
+            insertAllergy(formattedFormData)
                 .then((response) => {
                     setLoading(false);
                     navigate(LIST_ALLERGY);
                 })
                 .catch((error) => {
-                    if (error.status === 401) navigate(SIGN_OUT);
+                    if (error.status === 401) navigate(HOME);
                     setLoading(false);
 
                     handleAlertMessage(error);
                 });
         } else {
-            updateAllergy(formattedFormData, initialValue.id, accessToken)
+            updateAllergy(formattedFormData, initialValue.id)
                 .then((response) => {
                     setLoading(false);
                     navigate(LIST_ALLERGY);
                 })
                 .catch((error) => {
-                    if (error.status === 401) navigate(SIGN_OUT);
+                    if (error.status === 401) navigate(HOME);
                     setLoading(false);
 
                     handleAlertMessage(error);
@@ -92,13 +88,13 @@ const AllergyForm = ({ initialValue }: Props) => {
     };
 
     const confirmDelete = () => {
-        deleteAllergy(initialValue?.id as string, accessToken)
+        deleteAllergy(initialValue?.id as string)
             .then((response) => {
                 setDeleteLoading(false);
                 navigate(LIST_ALLERGY);
             })
             .catch((error) => {
-                if (error.status === 401) navigate(SIGN_OUT);
+                if (error.status === 401) navigate(HOME);
                 setDeleteLoading(false);
 
                 handleAlertMessage(error);

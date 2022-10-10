@@ -3,18 +3,10 @@ import {
     SymptomInterface,
 } from "../../interfaces/allergy.interfaces";
 import axios from "../axiosConfig";
-import setHeader from "../setHeader";
 
-export const addSymptom = async (
-    symptoms: SymptomInsertInterface,
-    token: string
-) => {
+export const addSymptom = async (symptoms: SymptomInsertInterface) => {
     try {
-        const response = await axios.post(
-            `/symptom/`,
-            symptoms,
-            setHeader(token)
-        );
+        const response = await axios.post(`/symptom/`, symptoms);
 
         return response.data;
     } catch (error: any) {
@@ -22,16 +14,9 @@ export const addSymptom = async (
     }
 };
 
-export const updateSymptom = async (
-    symptom: SymptomInterface,
-    token: string
-) => {
+export const updateSymptom = async (symptom: SymptomInterface) => {
     try {
-        const response = await axios.put(
-            `/symptom/${symptom.id}`,
-            symptom,
-            setHeader(token)
-        );
+        const response = await axios.put(`/symptom/${symptom.id}`, symptom);
 
         return response.data;
     } catch (error: any) {
@@ -39,12 +24,9 @@ export const updateSymptom = async (
     }
 };
 
-export const deleteSymptom = async (symptomId: string, token: string) => {
+export const deleteSymptom = async (symptomId: string) => {
     try {
-        const response = await axios.delete(
-            `/symptom/${symptomId}`,
-            setHeader(token)
-        );
+        const response = await axios.delete(`/symptom/${symptomId}`);
 
         return response.data;
     } catch (error: any) {

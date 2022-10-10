@@ -4,16 +4,17 @@ import { useNavigate } from "react-router-dom";
 import { getAllergys } from "../../api/Allergy/allergy.api";
 import AllergyListItem from "../../components/Allergy/AllergyListItem";
 import { DEFAULT_ALERT_VALUE } from "../../constants/alert.constants";
-import { SIGN_OUT } from "../../constants/routes.constants";
+import { SIGN_IN } from "../../constants/routes.constants";
 import { AllergyContext } from "../../contexts/AllergyProvider";
 import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
 import AlertMessageInterface from "../../interfaces/alert.interfaces";
 import { AllergyContextInterface } from "../../interfaces/allergy.interfaces";
-import { AuthenticationContextDataInterface } from "../../interfaces/authentication.interfaces";
+import AuthenticationContextInterface from "../../interfaces/authentication.interfaces";
 
 const ListAllergy = () => {
-    const { accessToken } = useContext(AuthenticationContext)
-        ?.authentication as AuthenticationContextDataInterface;
+    const { authentication } = useContext(
+        AuthenticationContext
+    ) as AuthenticationContextInterface;
 
     const { allergy, setAllergy } = useContext(
         AllergyContext
@@ -36,28 +37,30 @@ const ListAllergy = () => {
     };
 
     useEffect(() => {
-        getAllergys(accessToken)
-            .then((response) => {
-                setAllergy(response.data);
-                setData(response.data);
+        if (authentication) {
+            getAllergys()
+                .then((response) => {
+                    setAllergy(response.data);
+                    setData(response.data);
 
-                setAlertMessage(DEFAULT_ALERT_VALUE);
-            })
-            .catch((error) => {
-                if (!error)
-                    setAlertMessage({
-                        type: "error",
-                        message:
-                            "Cannot connect to the server. Please try again later.",
-                    });
-                else {
-                    if (error.status === 401) navigate(SIGN_OUT);
-                    setAlertMessage({
-                        type: "warning",
-                        message: error.data.message,
-                    });
-                }
-            });
+                    setAlertMessage(DEFAULT_ALERT_VALUE);
+                })
+                .catch((error) => {
+                    if (!error)
+                        setAlertMessage({
+                            type: "error",
+                            message:
+                                "Cannot connect to the server. Please try again later.",
+                        });
+                    else {
+                        if (error.status === 400) navigate(SIGN_IN);
+                        setAlertMessage({
+                            type: "warning",
+                            message: error.data.message,
+                        });
+                    }
+                });
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
