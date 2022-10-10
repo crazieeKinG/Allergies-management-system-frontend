@@ -1,14 +1,10 @@
-export interface AuthenticationContextDataInterface {
-    username: string;
-    photoUrl: string;
-    accessToken: string;
-}
+import UserInterface from "./user.interfaces";
 
 interface AuthenticationContextInterface {
-    authentication: AuthenticationContextDataInterface;
-    setAuthentication: React.Dispatch<
-        React.SetStateAction<AuthenticationContextDataInterface>
-    >;
+    authentication: string;
+    setAuthentication: React.Dispatch<React.SetStateAction<string>>;
+    user: UserInterface | undefined;
+    setUser: React.Dispatch<React.SetStateAction<UserInterface | undefined>>;
 }
 
 export default AuthenticationContextInterface;

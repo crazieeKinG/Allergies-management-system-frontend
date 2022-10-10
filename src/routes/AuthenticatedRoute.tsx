@@ -4,13 +4,14 @@ import Navbar from "../components/Navbar/Navbar";
 import { SIGN_IN } from "../constants/routes.constants";
 import AllergyProvider from "../contexts/AllergyProvider";
 import { AuthenticationContext } from "../contexts/AuthenticationProvider";
-import { AuthenticationContextDataInterface } from "../interfaces/authentication.interfaces";
+import AuthenticationContextInterface from "../interfaces/authentication.interfaces";
 
 const AuthenticatedRoute = () => {
-    const { accessToken } = useContext(AuthenticationContext)
-        ?.authentication as AuthenticationContextDataInterface;
+    const { authentication } = useContext(
+        AuthenticationContext
+    ) as AuthenticationContextInterface;
 
-    return accessToken ? (
+    return authentication ? (
         <AllergyProvider>
             <Navbar />
         </AllergyProvider>

@@ -1,18 +1,13 @@
 import { Alert, Col, Divider, Skeleton, Space, Typography } from "antd";
 import moment from "moment";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getUserData } from "../../api/User/user.api";
 import SignupForm from "../../components/Signup/SignupForm";
 import { DEFAULT_ALERT_VALUE } from "../../constants/alert.constants";
-import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
 import AlertMessageInterface from "../../interfaces/alert.interfaces";
-import { AuthenticationContextDataInterface } from "../../interfaces/authentication.interfaces";
 import UserInterface from "../../interfaces/user.interfaces";
 
 const UpdateProfile = () => {
-    const { accessToken } = useContext(AuthenticationContext)
-        ?.authentication as AuthenticationContextDataInterface;
-
     const [defaultValue, setDefaultValue] = useState<UserInterface | undefined>(
         undefined
     );
@@ -21,7 +16,7 @@ const UpdateProfile = () => {
         useState<AlertMessageInterface>(DEFAULT_ALERT_VALUE);
 
     useEffect(() => {
-        getUserData(accessToken)
+        getUserData()
             .then((response) => {
                 setDefaultValue({
                     ...response.data,
@@ -66,7 +61,6 @@ const UpdateProfile = () => {
                     </Col>
                 </Space>
             )}
-            ;
         </>
     );
 };

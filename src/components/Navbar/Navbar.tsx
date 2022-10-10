@@ -8,26 +8,55 @@ import {
     UserAddOutlined,
     UserOutlined,
 } from "@ant-design/icons";
-import { Avatar, Col, Divider, Menu, Row, Typography } from "antd";
-import { useContext } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Alert, Avatar, Col, Divider, Menu, Row, Typography } from "antd";
+import { useContext, useEffect, useState } from "react";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import { getUserData, signout } from "../../api/User/user.api";
+import { DEFAULT_ALERT_VALUE } from "../../constants/alert.constants";
 import {
     ADD_ALLERGY,
     HOME,
     LIST_ALLERGY,
     SIGN_IN,
-    SIGN_OUT,
     SIGN_UP,
     UPDATE_PASSWORD,
     UPDATE_PROFILE,
 } from "../../constants/routes.constants";
 import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
-import { AuthenticationContextDataInterface } from "../../interfaces/authentication.interfaces";
+import AlertMessageInterface from "../../interfaces/alert.interfaces";
+import AuthenticationContextInterface from "../../interfaces/authentication.interfaces";
 
 const Navbar = () => {
-    const { username, photoUrl, accessToken } = useContext(
+    const { authentication, setAuthentication, user, setUser } = useContext(
         AuthenticationContext
-    )?.authentication as AuthenticationContextDataInterface;
+    ) as AuthenticationContextInterface;
+    const [alertMessage, setAlertMessage] =
+        useState<AlertMessageInterface>(DEFAULT_ALERT_VALUE);
+
+    const navigate = useNavigate();
+
+    const signoutUser = () => {
+        signout()
+            .then(() => {
+                setAuthentication("");
+                setUser(undefined);
+                navigate(SIGN_IN);
+            })
+            .catch((error) => {
+                if (!error)
+                    setAlertMessage({
+                        type: "error",
+                        message:
+                            "Cannot connect to the server. Please try again later.",
+                    });
+                else
+                    setAlertMessage({
+                        type: "warning",
+                        message: error.message,
+                    });
+            });
+    };
+
     const NavItems = [
         {
             key: "Home",
@@ -64,8 +93,8 @@ const Navbar = () => {
         },
         {
             key: "Profile",
-            label: username,
-            icon: <Avatar src={photoUrl} />,
+            label: user ? user.fullName : "Unknown",
+            icon: <Avatar src={user ? user?.photoUrl : "Unknown"} />,
             children: [
                 {
                     key: "UpdateProfile",
@@ -79,12 +108,37 @@ const Navbar = () => {
                 },
                 {
                     key: "Signout",
-                    label: <Link to={SIGN_OUT}>Sign out</Link>,
+                    label: "Sign out",
                     icon: <LogoutOutlined />,
+                    onClick: signoutUser,
                 },
             ],
         },
     ];
+
+    useEffect(() => {
+        if (!user) {
+            getUserData()
+                .then((response) => {
+                    setUser(response.data);
+                    setAlertMessage(DEFAULT_ALERT_VALUE);
+                })
+                .catch((error) => {
+                    if (!error)
+                        setAlertMessage({
+                            type: "error",
+                            message:
+                                "Cannot connect to the server. Please try again later.",
+                        });
+                    else if (!!authentication)
+                        setAlertMessage({
+                            type: "warning",
+                            message: error.message,
+                        });
+                });
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <div>
@@ -100,11 +154,19 @@ const Navbar = () => {
                     <Menu
                         mode="horizontal"
                         className="border-0 justify-content-end"
-                        items={accessToken ? AuthenticatedNavItems : NavItems}
+                        items={
+                            authentication ? AuthenticatedNavItems : NavItems
+                        }
                     />
                 </Col>
             </Row>
             <Divider />
+            {alertMessage.message && (
+                <Alert
+                    type={alertMessage.type}
+                    message={alertMessage.message}
+                />
+            )}
             <Outlet />
         </div>
     );

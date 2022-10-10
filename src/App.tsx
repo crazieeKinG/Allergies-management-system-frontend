@@ -4,16 +4,16 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle";
 import AuthenticationProvider from "./contexts/AuthenticationProvider";
 
-import { CookiesProvider } from "react-cookie";
+import { AxiosInterceptor } from "./api/axiosConfig";
 
 function App() {
     return (
         <div className="container py-3">
-            <CookiesProvider>
-                <AuthenticationProvider>
+            <AuthenticationProvider>
+                <AxiosInterceptor>
                     <AppRoutes />
-                </AuthenticationProvider>
-            </CookiesProvider>
+                </AxiosInterceptor>
+            </AuthenticationProvider>
         </div>
     );
 }

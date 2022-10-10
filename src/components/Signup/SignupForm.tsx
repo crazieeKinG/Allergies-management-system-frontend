@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useState, useContext } from "react";
 import {
     UserOutlined,
     LockOutlined,
@@ -12,22 +12,20 @@ import UserInterface from "../../interfaces/user.interfaces";
 import { signup, updateProfile } from "../../api/User/user.api";
 import { LIST_ALLERGY, SIGN_IN } from "../../constants/routes.constants";
 import { useNavigate } from "react-router-dom";
-import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
-import { AuthenticationContextDataInterface } from "../../interfaces/authentication.interfaces";
 import createFormData from "../../utils/createFormData";
-import { useCookies } from "react-cookie";
 import AlertMessageInterface from "../../interfaces/alert.interfaces";
 import { DEFAULT_ALERT_VALUE } from "../../constants/alert.constants";
+import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
+import AuthenticationContextInterface from "../../interfaces/authentication.interfaces";
 
 interface Props {
     initialValue?: UserInterface;
 }
 
 const SignupForm = ({ initialValue }: Props) => {
-    const [, setCookie, removeCookie] = useCookies();
-    const { accessToken } = useContext(AuthenticationContext)
-        ?.authentication as AuthenticationContextDataInterface;
-
+    const { setUser } = useContext(
+        AuthenticationContext
+    ) as AuthenticationContextInterface;
     const [aggrement, setAggrement] = useState(!!initialValue);
     const [loading, setLoading] = useState(false);
     const [alertMessage, setAlertMessage] =
@@ -70,14 +68,11 @@ const SignupForm = ({ initialValue }: Props) => {
                         });
                 });
         } else {
-            updateProfile(formattedData, initialValue.id, accessToken)
+            updateProfile(formattedData, initialValue.id)
                 .then((response) => {
-                    removeCookie("username");
-                    removeCookie("photoUrl");
-                    setCookie("username", response.data[0].fullName);
-                    setCookie("photoUrl", response.data[0].photoUrl);
-
                     setLoading(false);
+
+                    setUser(undefined);
                     navigate(LIST_ALLERGY);
                 })
                 .catch((error) => {

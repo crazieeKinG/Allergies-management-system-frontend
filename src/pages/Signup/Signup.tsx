@@ -7,13 +7,14 @@ import { Link, Navigate } from "react-router-dom";
 import SignupForm from "../../components/Signup/SignupForm";
 import { HOME, SIGN_IN } from "../../constants/routes.constants";
 import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
-import { AuthenticationContextDataInterface } from "../../interfaces/authentication.interfaces";
+import AuthenticationContextInterface from "../../interfaces/authentication.interfaces";
 
 const Signup = () => {
-    const { accessToken } = useContext(AuthenticationContext)
-        ?.authentication as AuthenticationContextDataInterface;
+    const { authentication } = useContext(
+        AuthenticationContext
+    ) as AuthenticationContextInterface;
 
-    return accessToken ? (
+    return authentication ? (
         <Navigate to={HOME} />
     ) : (
         <Space direction="vertical" size={20} className="d-flex">

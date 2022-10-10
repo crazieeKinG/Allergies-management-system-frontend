@@ -1,10 +1,29 @@
 import { UserCredentialsInterface } from "../../interfaces/user.interfaces";
 import axios from "../axiosConfig";
-import setHeader from "../setHeader";
 
 export const signin = async (userCredentials: UserCredentialsInterface) => {
     try {
-        const response = await axios.post("/user/signin", userCredentials);
+        const response = await axios.post("/user/signin", userCredentials, {
+            withCredentials: true,
+        });
+        console.log(response);
+        axios.defaults.headers.common["Authorization"] =
+            "Bearer " + response.data.data.accessToken;
+
+        return response.data;
+    } catch (error: any) {
+        console.log(error);
+        throw error.response.data;
+    }
+};
+
+export const signout = async () => {
+    try {
+        const response = await axios.post(
+            "/user/signout",
+            {},
+            { withCredentials: true }
+        );
 
         return response.data;
     } catch (error: any) {
@@ -22,9 +41,19 @@ export const signup = async (userData: FormData) => {
     }
 };
 
-export const getUserData = async (token: string) => {
+export const getUserData = async () => {
     try {
-        const response = await axios.get("/user/profile", setHeader(token));
+        const response = await axios.get("/user/profile");
+        
+        return response.data;
+    } catch (error: any) {
+        throw error.response.data;
+    }
+};
+
+export const updateProfile = async (userData: FormData, userId: string) => {
+    try {
+        const response = await axios.put(`/user/${userId}`, userData);
 
         return response.data;
     } catch (error: any) {
@@ -32,31 +61,9 @@ export const getUserData = async (token: string) => {
     }
 };
 
-export const updateProfile = async (
-    userData: FormData,
-    userId: string,
-    token: string
-) => {
+export const changePassword = async (password: string) => {
     try {
-        const response = await axios.put(
-            `/user/${userId}`,
-            userData,
-            setHeader(token)
-        );
-
-        return response.data;
-    } catch (error: any) {
-        throw error.response.data;
-    }
-};
-
-export const changePassword = async (password: string, token: string) => {
-    try {
-        const response = await axios.put(
-            `/user/reset/password`,
-            { password },
-            setHeader(token)
-        );
+        const response = await axios.put(`/user/reset/password`, { password });
 
         return response.data;
     } catch (error: any) {
