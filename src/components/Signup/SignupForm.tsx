@@ -83,7 +83,7 @@ const SignupForm = ({ initialValue }: Props) => {
                         });
                     else
                         setAlertMessage({
-                            type: "warning",
+                            type: "error",
                             message: error.message,
                         });
                 });
@@ -106,7 +106,7 @@ const SignupForm = ({ initialValue }: Props) => {
                         });
                     else
                         setAlertMessage({
-                            type: "warning",
+                            type: "error",
                             message: error.message,
                         });
                 });
@@ -116,7 +116,15 @@ const SignupForm = ({ initialValue }: Props) => {
     const formik = useFormik({
         initialValues: { ...formikInitialValue },
         onSubmit: (values) => {
+            //Password checker
             const password = values.password;
+            if (password.length < 8) {
+                setAlertMessage({
+                    type: "error",
+                    message: "Password must be at least 8 characters",
+                });
+                return;
+            }
             const passwordCheckForValidCharacters = password.replaceAll(
                 passwordCharacters,
                 ""
@@ -145,6 +153,7 @@ const SignupForm = ({ initialValue }: Props) => {
                 return;
             }
 
+            //Form handler
             handleSubmit(values);
         },
     });
