@@ -8,7 +8,7 @@ import {
 import { Alert, Checkbox, DatePicker, Form, Radio, Upload } from "antd";
 import Button from "antd/lib/button";
 import Input from "antd/lib/input";
-import UserInterface from "../../interfaces/user.interfaces";
+import UserInterface, { UserToInsert } from "../../interfaces/user.interfaces";
 import { signup, updateProfile } from "../../api/User/user.api";
 import { LIST_ALLERGY, SIGN_IN } from "../../constants/routes.constants";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +17,15 @@ import AlertMessageInterface from "../../interfaces/alert.interfaces";
 import { DEFAULT_ALERT_VALUE } from "../../constants/alert.constants";
 import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
 import AuthenticationContextInterface from "../../interfaces/authentication.interfaces";
+import { useFormik } from "formik";
+import moment from "moment";
+import {
+    passwordCapitalCheck,
+    passwordCharacters,
+    passwordLowercaseCheck,
+    passwordNumberCheck,
+    passwordSymbolCheck,
+} from "../../validation/signUpRegex";
 
 interface Props {
     initialValue?: UserInterface;
@@ -31,6 +40,17 @@ const SignupForm = ({ initialValue }: Props) => {
     const [alertMessage, setAlertMessage] =
         useState<AlertMessageInterface>(DEFAULT_ALERT_VALUE);
     const navigate = useNavigate();
+
+    const formikInitialValue = {
+        fullName: "",
+        dateOfBirth: moment(),
+        gender: "Male",
+        email: "",
+        password: "",
+        address: "",
+        photo: undefined,
+        photoUrl: "",
+    };
 
     const handleSubmit = (values: any) => {
         setLoading(true);
@@ -63,7 +83,7 @@ const SignupForm = ({ initialValue }: Props) => {
                         });
                     else
                         setAlertMessage({
-                            type: "warning",
+                            type: "error",
                             message: error.message,
                         });
                 });
@@ -86,20 +106,66 @@ const SignupForm = ({ initialValue }: Props) => {
                         });
                     else
                         setAlertMessage({
-                            type: "warning",
+                            type: "error",
                             message: error.message,
                         });
                 });
         }
     };
 
+    const formik = useFormik({
+        initialValues: { ...formikInitialValue },
+        onSubmit: (values) => {
+            //Password checker
+            const password = values.password;
+            if (password.length < 8) {
+                setAlertMessage({
+                    type: "error",
+                    message: "Password must be at least 8 characters",
+                });
+                return;
+            }
+            const passwordCheckForValidCharacters = password.replaceAll(
+                passwordCharacters,
+                ""
+            );
+
+            if (passwordCheckForValidCharacters.length > 0) {
+                setAlertMessage({
+                    type: "error",
+                    message:
+                        "Please include only letters (A-Z, a-z), numbers (0-9), and special symbols (@, #, $, %, _)",
+                });
+                return;
+            }
+
+            if (
+                !passwordCapitalCheck.test(values.password) ||
+                !passwordLowercaseCheck.test(values.password) ||
+                !passwordSymbolCheck.test(values.password) ||
+                !passwordNumberCheck.test(values.password)
+            ) {
+                setAlertMessage({
+                    type: "error",
+                    message:
+                        "Please include atleast 1 capital letter (A-Z), 1 lowercase letter (a-z) 1 number (0-9), and 1 special symbol (@, #, $, %, _)",
+                });
+                return;
+            }
+
+            //Form handler
+            handleSubmit(values);
+        },
+    });
+
     return (
         <Form
             labelCol={{ span: 6 }}
             labelAlign="left"
-            onFinish={handleSubmit}
+            onFinish={formik.handleSubmit}
             requiredMark={false}
-            initialValues={initialValue}
+            initialValues={formik.values}
+            onChange={formik.handleChange}
         >
             {alertMessage.message && (
                 <Alert
@@ -169,11 +235,7 @@ const SignupForm = ({ initialValue }: Props) => {
                 label="Email"
                 rules={[{ required: true, message: "Please provide email" }]}
             >
-                <Input
-                    prefix={<UserOutlined />}
-                    type="email"
-                    placeholder="Email address"
-                />
+                <Input prefix={<UserOutlined />} placeholder="Email address" />
             </Form.Item>
 
             {!initialValue && (
