@@ -51,7 +51,7 @@ const Navbar = () => {
                     });
                 else
                     setAlertMessage({
-                        type: "warning",
+                        type: "error",
                         message: error.message,
                     });
             });
@@ -132,7 +132,7 @@ const Navbar = () => {
                         });
                     else if (!!authentication)
                         setAlertMessage({
-                            type: "warning",
+                            type: "error",
                             message: error.message,
                         });
                 });

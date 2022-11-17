@@ -44,7 +44,7 @@ const SigninForm = () => {
                     });
                 else
                     setAlertMessage({
-                        type: "warning",
+                        type: "error",
                         message: error.message,
                     });
             });

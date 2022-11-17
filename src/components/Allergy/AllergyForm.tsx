@@ -110,7 +110,7 @@ const AllergyForm = ({ initialValue }: Props) => {
             });
         else
             setAlertMessage({
-                type: "warning",
+                type: "error",
                 message: error.message,
             });
     };
