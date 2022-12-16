@@ -3,7 +3,7 @@ import { fullnameValidCharacters } from "./regularExpressions";
 const fullNameValidation = (fullname: string) => {
     if (fullname.length > 30) return "Full name must be at most 30 characters";
 
-    const fullNameCheckForValidCharacters = fullname.replaceAll(
+    const fullNameCheckForValidCharacters = fullname.replace(
         fullnameValidCharacters,
         ""
     );
