@@ -6,13 +6,12 @@ export const signin = async (userCredentials: UserCredentialsInterface) => {
         const response = await axios.post("/user/signin", userCredentials, {
             withCredentials: true,
         });
-        console.log(response);
+
         axios.defaults.headers.common["Authorization"] =
             "Bearer " + response.data.data.accessToken;
 
         return response.data;
     } catch (error: any) {
-        console.log(error);
         throw error.response.data;
     }
 };

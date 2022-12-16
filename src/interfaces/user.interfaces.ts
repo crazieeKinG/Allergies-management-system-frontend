@@ -5,6 +5,7 @@ interface UserInterface {
     gender: string;
     email: string;
     address: string;
+    password?: string;
     photo?: File;
     photoUrl?: string;
 }

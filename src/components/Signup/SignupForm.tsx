@@ -14,9 +14,17 @@ import { LIST_ALLERGY, SIGN_IN } from "../../constants/routes.constants";
 import { useNavigate } from "react-router-dom";
 import createFormData from "../../utils/createFormData";
 import AlertMessageInterface from "../../interfaces/alert.interfaces";
-import { DEFAULT_ALERT_VALUE } from "../../constants/alert.constants";
+import {
+    DEFAULT_ALERT_VALUE,
+    STATUS_TYPES,
+} from "../../constants/alert.constants";
 import { AuthenticationContext } from "../../contexts/AuthenticationProvider";
 import AuthenticationContextInterface from "../../interfaces/authentication.interfaces";
+import { useFormik } from "formik";
+import moment from "moment";
+import passwordValidation from "../../validation/passwordValidation";
+import fullNameValidation from "../../validation/fullNameValidation";
+import emailValidation from "../../validation/emailValidation";
 
 interface Props {
     initialValue?: UserInterface;
@@ -31,6 +39,23 @@ const SignupForm = ({ initialValue }: Props) => {
     const [alertMessage, setAlertMessage] =
         useState<AlertMessageInterface>(DEFAULT_ALERT_VALUE);
     const navigate = useNavigate();
+
+    const [emailStatus, setEmailStatus] = useState<STATUS_TYPES>(undefined);
+    const [fullNameStatus, setFullNameStatus] =
+        useState<STATUS_TYPES>(undefined);
+    const [passwordStatus, setPasswordStatus] =
+        useState<STATUS_TYPES>(undefined);
+
+    const formikInitialValue = {
+        fullName: "",
+        dateOfBirth: moment(),
+        gender: "Male",
+        email: "",
+        password: "",
+        address: "",
+        photo: undefined as any,
+        photoUrl: "",
+    };
 
     const handleSubmit = (values: any) => {
         setLoading(true);
@@ -63,7 +88,7 @@ const SignupForm = ({ initialValue }: Props) => {
                         });
                     else
                         setAlertMessage({
-                            type: "warning",
+                            type: "error",
                             message: error.message,
                         });
                 });
@@ -86,20 +111,73 @@ const SignupForm = ({ initialValue }: Props) => {
                         });
                     else
                         setAlertMessage({
-                            type: "warning",
+                            type: "error",
                             message: error.message,
                         });
                 });
         }
     };
 
+    const formik = useFormik({
+        initialValues: !!initialValue
+            ? { ...initialValue }
+            : { ...formikInitialValue },
+        onSubmit: (values) => {
+            //fullname checker
+            let message = fullNameValidation(values.fullName);
+
+            if (message) {
+                setAlertMessage({
+                    type: "error",
+                    message: message,
+                });
+                setFullNameStatus("error");
+                return;
+            }
+            setFullNameStatus(undefined);
+
+            //email checker
+            message = emailValidation(values.email);
+
+            if (message) {
+                setAlertMessage({
+                    type: "error",
+                    message: message,
+                });
+                setEmailStatus("error");
+                return;
+            }
+            setEmailStatus(undefined);
+
+            //Password checker
+            message = !initialValue
+                ? passwordValidation(values.password as string)
+                : undefined;
+
+            if (message) {
+                setAlertMessage({
+                    type: "error",
+                    message: message,
+                });
+                setPasswordStatus("error");
+                return;
+            }
+            setPasswordStatus(undefined);
+
+            setAlertMessage(DEFAULT_ALERT_VALUE);
+
+            //Form handler
+            handleSubmit(values);
+        },
+    });
+
     return (
         <Form
             labelCol={{ span: 6 }}
             labelAlign="left"
-            onFinish={handleSubmit}
+            onFinish={formik.handleSubmit}
             requiredMark={false}
-            initialValues={initialValue}
+            initialValues={formik.values}
         >
             {alertMessage.message && (
                 <Alert
@@ -114,6 +192,9 @@ const SignupForm = ({ initialValue }: Props) => {
                     listType="picture"
                     maxCount={1}
                     fileList={undefined}
+                    onChange={(photoFile) =>
+                        formik.setFieldValue("photo", photoFile)
+                    }
                 >
                     <Button icon={<UploadOutlined />}>Upload</Button>
                 </Upload>
@@ -127,8 +208,10 @@ const SignupForm = ({ initialValue }: Props) => {
                 ]}
             >
                 <Input
+                    status={fullNameStatus}
                     prefix={<UserOutlined />}
                     placeholder="Full name, eg: John Doe"
+                    onChange={formik.handleChange}
                 />
             </Form.Item>
 
@@ -139,7 +222,10 @@ const SignupForm = ({ initialValue }: Props) => {
                     { required: true, message: "Please provide date of birth" },
                 ]}
             >
-                <DatePicker placeholder="Date of birth" />
+                <DatePicker
+                    placeholder="Date of birth"
+                    onChange={formik.handleChange}
+                />
             </Form.Item>
 
             <Form.Item
@@ -149,7 +235,7 @@ const SignupForm = ({ initialValue }: Props) => {
                     { required: true, message: "Please select one option" },
                 ]}
             >
-                <Radio.Group optionType="button">
+                <Radio.Group optionType="button" onChange={formik.handleChange}>
                     <Radio value="Male">Male</Radio>
                     <Radio value="Female">Female</Radio>
                     <Radio value="Others">Others</Radio>
@@ -161,7 +247,11 @@ const SignupForm = ({ initialValue }: Props) => {
                 label="Address"
                 rules={[{ required: true, message: "Please provide address!" }]}
             >
-                <Input prefix={<EnvironmentOutlined />} placeholder="Address" />
+                <Input
+                    prefix={<EnvironmentOutlined />}
+                    placeholder="Address"
+                    onChange={formik.handleChange}
+                />
             </Form.Item>
 
             <Form.Item
@@ -170,9 +260,10 @@ const SignupForm = ({ initialValue }: Props) => {
                 rules={[{ required: true, message: "Please provide email" }]}
             >
                 <Input
+                    status={emailStatus}
                     prefix={<UserOutlined />}
-                    type="email"
                     placeholder="Email address"
+                    onChange={formik.handleChange}
                 />
             </Form.Item>
 
@@ -189,8 +280,10 @@ const SignupForm = ({ initialValue }: Props) => {
                         ]}
                     >
                         <Input.Password
+                            status={passwordStatus}
                             prefix={<LockOutlined />}
                             placeholder="Password"
+                            onChange={formik.handleChange}
                         />
                     </Form.Item>
 
@@ -220,8 +313,10 @@ const SignupForm = ({ initialValue }: Props) => {
                         ]}
                     >
                         <Input.Password
+                            status={passwordStatus}
                             prefix={<LockOutlined />}
                             placeholder="Confirm password"
+                            onChange={formik.handleChange}
                         />
                     </Form.Item>
 

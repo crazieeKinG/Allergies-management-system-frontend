@@ -32,7 +32,6 @@ export const AxiosInterceptor = ({ children }: Props) => {
                 previousRequest.headers["Authorization"] =
                     "Bearer " + accessToken;
 
-            console.log(accessToken);
             setAuthentication(accessToken);
 
             setRefresh(false);
@@ -56,7 +55,6 @@ export const AxiosInterceptor = ({ children }: Props) => {
                 if (error.response.status === 403) {
                     setAuthentication("");
 
-                    console.log(error.response.data.message);
                     setAlertMessage(error.response.data.message);
                 }
 
