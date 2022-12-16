@@ -55,7 +55,7 @@ const ListAllergy = () => {
                     else {
                         if (error.status === 400) navigate(SIGN_IN);
                         setAlertMessage({
-                            type: "warning",
+                            type: "error",
                             message: error.data.message,
                         });
                     }
