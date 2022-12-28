@@ -119,7 +119,9 @@ const SignupForm = ({ initialValue }: Props) => {
     };
 
     const formik = useFormik({
-        initialValues: { ...formikInitialValue },
+        initialValues: !!initialValue
+            ? { ...initialValue }
+            : { ...formikInitialValue },
         onSubmit: (values) => {
             //fullname checker
             let message = fullNameValidation(values.fullName);
@@ -148,7 +150,9 @@ const SignupForm = ({ initialValue }: Props) => {
             setEmailStatus(undefined);
 
             //Password checker
-            message = passwordValidation(values.password);
+            message = !initialValue
+                ? passwordValidation(values.password as string)
+                : undefined;
 
             if (message) {
                 setAlertMessage({
